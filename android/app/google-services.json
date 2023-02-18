@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "367473903844",
+    "project_id": "addplaces-59c59",
+    "storage_bucket": "addplaces-59c59.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:367473903844:android:a427ab2f8cede220b744f1",
+        "android_client_info": {
+          "package_name": "com.addplaces"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "367473903844-rcpnb8fhj3tdeu01uh2vb0mc844sget7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwpU76Mqr8qZ9HDMaZuDVer5AY1-HTfm8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "367473903844-rcpnb8fhj3tdeu01uh2vb0mc844sget7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "367473903844-rjgfsc6bcu783ehmgprm88pskghd186j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.AddPlaces"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
