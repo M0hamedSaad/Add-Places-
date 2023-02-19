@@ -1,9 +1,8 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {COLORS} from '@src/themes';
 import {useNavigation} from '@react-navigation/native';
+import {COLORS} from '@src/themes';
+import React from 'react';
+import {StyleSheet, TouchableOpacity} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 export const Back = () => {
   const navigation = useNavigation();
   return navigation.canGoBack() ? (

@@ -1,13 +1,13 @@
-import {Button, ErrorMessage, Input} from '@src/components';
-import {COLORS} from '@src/themes';
-import {Formik} from 'formik';
-import React, {useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import * as Yup from 'yup';
 import auth from '@react-native-firebase/auth';
 import {useNavigation} from '@react-navigation/native';
+import {Button, ErrorMessage, Input} from '@src/components';
 import {RootNavigationProp} from '@src/navigation';
+import {COLORS} from '@src/themes';
 import {saveData} from '@src/utils';
+import {Formik} from 'formik';
+import React, {useState} from 'react';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import * as Yup from 'yup';
 
 interface user {
   email: string;
@@ -70,13 +70,14 @@ export const AuthScreen = () => {
           validationSchema={validationSchema}
           onSubmit={values => onSubmit(values)}>
           {({handleChange, handleBlur, handleSubmit, errors, touched}) => (
-            <>
+            <ScrollView>
               <Input
                 onChangeText={handleChange('email')}
                 onBlur={handleBlur('email')}
                 placeholder="Email"
                 containerStyle={styles.input}
                 error={touched.email ? errors.email : ''}
+                keyboardType="email-address"
               />
               <Input
                 onChangeText={handleChange('password')}
@@ -92,7 +93,7 @@ export const AuthScreen = () => {
                 title={isLogin ? 'Login' : 'Create Account'}
                 style={styles.btn}
               />
-            </>
+            </ScrollView>
           )}
         </Formik>
         <ErrorMessage error={errorMessage} />

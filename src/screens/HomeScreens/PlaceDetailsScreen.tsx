@@ -1,10 +1,10 @@
-import database, {firebase} from '@react-native-firebase/database';
+import database from '@react-native-firebase/database';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {ActionsSheet, Back, Button, Input} from '@src/components';
 import {RootStackParamList} from '@src/navigation';
 import {Formik} from 'formik';
 import React, {useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as Yup from 'yup';
 
@@ -12,8 +12,8 @@ interface Values {
   name: string;
   phoneNumber: string;
   placeType: string;
-  lat?: number;
-  lng?: number;
+  lat?: string;
+  lng?: string;
 }
 const phoneRegExp =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -21,7 +21,7 @@ const phoneRegExp =
 const validationSchema = Yup.object().shape({
   name: Yup.string()
     .required('Name is required!')
-    .min(4, 'Password must contain at least 4 characters.'),
+    .min(4, 'Name must contain at least 4 characters.'),
   phoneNumber: Yup.string()
     .required('Phone is required!')
     .matches(phoneRegExp, 'Phone number is not valid'),
@@ -67,6 +67,8 @@ export const PlaceDetailsScreen = () => {
         .update({
           ...params.place,
           ...values,
+          lat: parseFloat(values.lat as string),
+          lng: parseFloat(values.lng as string),
           placeType: values.placeType.toLocaleUpperCase(),
         })
         .then(() => {
@@ -81,6 +83,8 @@ export const PlaceDetailsScreen = () => {
         .set({
           id: referenceToPush.key,
           ...values,
+          lat: parseFloat(values.lat as string),
+          lng: parseFloat(values.lng as string),
           placeType: values.placeType.toLocaleUpperCase(),
         })
         .then(() => {
@@ -99,8 +103,12 @@ export const PlaceDetailsScreen = () => {
 
       <Formik
         initialValues={{
-          lat: isUpdate ? params.place.lat : params.coordinate?.latitude,
-          lng: isUpdate ? params.place.lng : params.coordinate?.longitude,
+          lat: isUpdate
+            ? params.place.lat.toString()
+            : params.coordinate?.latitude?.toString(),
+          lng: isUpdate
+            ? params.place.lng.toString()
+            : params.coordinate?.longitude?.toString(),
           name: isUpdate ? params.place.name : '',
           phoneNumber: isUpdate ? params.place.phoneNumber : '',
           placeType: isUpdate
@@ -123,7 +131,9 @@ export const PlaceDetailsScreen = () => {
           touched,
           values,
         }) => (
-          <View style={styles.form}>
+          <ScrollView
+            contentContainerStyle={styles.form}
+            keyboardShouldPersistTaps="handled">
             <ActionsSheet
               style={styles.input}
               options={options}
@@ -177,7 +187,7 @@ export const PlaceDetailsScreen = () => {
               title={'Save'}
               style={styles.btn}
             />
-          </View>
+          </ScrollView>
         )}
       </Formik>
     </View>

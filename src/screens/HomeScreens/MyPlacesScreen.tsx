@@ -5,12 +5,13 @@ import {COLORS} from '@src/themes';
 import {IPlace} from './MapScreen';
 import database from '@react-native-firebase/database';
 import {getUserEmail} from '@src/utils';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {RootNavigationProp} from '@src/navigation';
 
 export const MyPlacesScreen = () => {
   const navigation = useNavigation<RootNavigationProp>();
   const [places, setPlaces] = useState<IPlace[]>([]);
+  const isFocused = useIsFocused();
   const onPress = async (place: IPlace) => {
     navigation.navigate('PlaceScreenDetails', {
       place,
@@ -22,15 +23,20 @@ export const MyPlacesScreen = () => {
   );
 
   useEffect(() => {
-    getUserEmail().then(email => {
-      database()
-        .ref(`/places/${email}`)
-        .once('value', snapshot => {
-          if (snapshot.exists()) setPlaces(Object.values(snapshot.val()));
-          console.log('my places', snapshot.val());
-        });
-    });
-  }, []);
+    if (isFocused)
+      getUserEmail().then(email => {
+        database()
+          .ref(`/places/${email}`)
+          .once('value', snapshot => {
+            if (snapshot.exists()) setPlaces(Object.values(snapshot.val()));
+            console.log('my places', snapshot.val());
+          });
+      });
+    else
+      getUserEmail().then(email => {
+        database().ref(`/places/${email}`).off();
+      });
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>

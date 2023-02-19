@@ -1,8 +1,7 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import React, {useRef} from 'react';
 import ActionSheet from 'react-native-actionsheet';
 import {COLORS} from '@src/themes';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import {ViewStyle} from 'react-native';
 import {ErrorMessage} from './errorMessage';
 import Icon from 'react-native-vector-icons/AntDesign';

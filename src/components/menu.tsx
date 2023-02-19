@@ -26,7 +26,7 @@ export const MenuItems = () => {
       screen: 'MyPlacesScreen',
     },
   ];
-  const onPress = (screen: keyof RootStackParamList) => {
+  const onPress = (screen: any) => {
     hideMenu();
     navigation.navigate(screen);
   };
@@ -64,13 +64,15 @@ export const MenuItems = () => {
         {items.map(i => {
           return (
             <MenuItem key={i.name} onPress={() => onPress(i.screen)}>
-              {i.name}
+              <Text style={{color: COLORS.PRIMARY}}>{i.name}</Text>
             </MenuItem>
           );
         })}
 
         <MenuDivider />
-        <MenuItem onPress={logout}>Log out</MenuItem>
+        <MenuItem onPress={logout}>
+          <Text style={{color: COLORS.PRIMARY}}>{'Log out'}</Text>
+        </MenuItem>
       </Menu>
     </View>
   );

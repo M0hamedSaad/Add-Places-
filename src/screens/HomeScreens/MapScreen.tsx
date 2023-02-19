@@ -4,9 +4,15 @@ import {useNavigation} from '@react-navigation/native';
 import {IMAGES} from '@src/assets';
 import {Button, MenuItems} from '@src/components';
 import {RootNavigationProp} from '@src/navigation';
-import {getData, getUserEmail} from '@src/utils';
+import {getUserEmail} from '@src/utils';
 import React, {useEffect, useRef, useState} from 'react';
-import {Image, Platform, StyleSheet, View} from 'react-native';
+import {
+  Image,
+  PermissionsAndroid,
+  Platform,
+  StyleSheet,
+  View,
+} from 'react-native';
 import MapView, {
   MapPressEvent,
   Marker,
@@ -60,32 +66,51 @@ export const MapScreen = () => {
   }, []);
 
   const checkPermission = () => {
-    check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then(result => {
-      switch (result) {
-        case RESULTS.UNAVAILABLE:
-          console.log(
-            'This feature is not available (on this device / in this context)',
-          );
-          break;
-        case RESULTS.DENIED:
-          console.log(
-            'The permission has not been requested / is denied but requestable',
-          );
-          requestPermission();
-          break;
-        case RESULTS.LIMITED:
-          console.log('The permission is limited: some actions are possible');
-          break;
-        case RESULTS.GRANTED:
-          console.log('The permission is granted');
-          getCurrentLocation();
-          break;
-        case RESULTS.BLOCKED:
-          console.log('The permission is denied and not requestable anymore');
-          break;
-      }
-    });
+    if (Platform.OS == 'ios') {
+      check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then(result => {
+        switch (result) {
+          case RESULTS.UNAVAILABLE:
+            console.log(
+              'This feature is not available (on this device / in this context)',
+            );
+            break;
+          case RESULTS.DENIED:
+            console.log(
+              'The permission has not been requested / is denied but requestable',
+            );
+            requestPermission();
+            break;
+          case RESULTS.LIMITED:
+            console.log('The permission is limited: some actions are possible');
+            break;
+          case RESULTS.GRANTED:
+            console.log('The permission is granted');
+            getCurrentLocation();
+            break;
+          case RESULTS.BLOCKED:
+            console.log('The permission is denied and not requestable anymore');
+            break;
+        }
+      });
+    } else {
+      requestLocationPermission();
+    }
   };
+
+  async function requestLocationPermission() {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        getCurrentLocation();
+      } else {
+        console.log('Location permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  }
 
   const requestPermission = () => {
     request(PERMISSIONS.IOS.LOCATION_ALWAYS).then(result => {
@@ -99,7 +124,10 @@ export const MapScreen = () => {
         console.log('current location is->', pos.coords);
         setCoordinate(pos.coords);
       },
-      err => console.log('current location error.', err.message),
+      err => {
+        console.log('current location error.', err.message);
+        setCoordinate({latitude: 37.78825, longitude: -122.4324});
+      },
     );
   };
 
@@ -135,49 +163,50 @@ export const MapScreen = () => {
 
   return (
     <View style={styles.container}>
-      <MapView
-        customMapStyle={GRAY_MAP_STYLE}
-        provider={
-          Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
-        }
-        style={styles.map}
-        ref={ref}
-        initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-        // showsUserLocation
-        onPress={onPressMap}
-        minZoomLevel={3}
-        onRegionChangeComplete={onRegionChangeComplete}>
-        {coordinate && (
-          <Marker coordinate={coordinate} title={'My Current location'}>
-            <Image
-              source={IMAGES.PIN}
-              style={styles.icon}
-              resizeMode="contain"
-            />
-          </Marker>
-        )}
-        {places.map((place, index) => (
-          <Marker
-            onPress={() => {
-              onPressMarker(place);
-            }}
-            key={index}
-            coordinate={{latitude: place.lat, longitude: place.lng}}
-            title={place.name}
-            description={place.placeType}>
-            <Image
-              source={IMAGES[place.placeType]}
-              style={styles.icon}
-              resizeMode="contain"
-            />
-          </Marker>
-        ))}
-      </MapView>
+      {coordinate && (
+        <MapView
+          customMapStyle={GRAY_MAP_STYLE}
+          provider={
+            Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
+          }
+          style={styles.map}
+          ref={ref}
+          initialRegion={{
+            ...coordinate,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}
+          // showsUserLocation
+          onPress={onPressMap}
+          minZoomLevel={3}
+          onRegionChangeComplete={onRegionChangeComplete}>
+          {coordinate && (
+            <Marker coordinate={coordinate} title={'My Current location'}>
+              <Image
+                source={IMAGES.PIN}
+                style={styles.icon}
+                resizeMode="contain"
+              />
+            </Marker>
+          )}
+          {places.map((place, index) => (
+            <Marker
+              onPress={() => {
+                onPressMarker(place);
+              }}
+              key={index}
+              coordinate={{latitude: place.lat, longitude: place.lng}}
+              title={place.name}
+              description={place.placeType}>
+              <Image
+                source={IMAGES[place.placeType]}
+                style={styles.icon}
+                resizeMode="contain"
+              />
+            </Marker>
+          ))}
+        </MapView>
+      )}
       <MenuItems />
       <Button title="Add Place" style={styles.btn} onPress={addPlace} />
     </View>
