@@ -28,7 +28,9 @@ export const MenuItems = () => {
   ];
   const onPress = (screen: any) => {
     hideMenu();
-    navigation.navigate(screen);
+    setTimeout(() => {
+      navigation.navigate(screen);
+    }, 500);
   };
 
   const logout = () => {
